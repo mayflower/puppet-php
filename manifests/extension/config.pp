@@ -80,13 +80,18 @@ define php::extension::config (
     String => ensure_prefix($settings, "${settings_prefix}."),
   }
 
-  if $provider != 'pear' {
-    $final_settings = deep_merge(
-      {"${extension_key}" => "${module_path}${so_name}.so"},
-      $full_settings
-    )
-  } else {
+  if $provider == 'pear' {
     $final_settings = $full_settings
+  } else {
+    $excluded_add_extension_key_extensions = ['mysql'];
+    if ($so_name in $excluded_add_extension_key_extensions) {
+      $final_settings = $full_settings
+    } else {
+      $final_settings = deep_merge(
+        {"${extension_key}" => "${module_path}${so_name}.so"},
+        $full_settings
+      )
+    }
   }
 
   $config_root_ini = pick_default($::php::config_root_ini, $::php::params::config_root_ini)
@@ -102,19 +107,48 @@ define php::extension::config (
   $ext_tool_enabled  = pick_default($::php::ext_tool_enabled, $::php::params::ext_tool_enabled)
 
   if $facts['os']['family'] == 'Debian' and $ext_tool_enabled {
-    $cmd = "${ext_tool_enable} -s ${sapi} ${so_name}"
+    case $so_name {
+      'mysql': {
+        case $php::globals::php_version {
+          /^7\.[0-9]$/: {
+            $cmds = {
+              'mysqlnd' => "${ext_tool_enable} -s ${sapi} mysqlnd",
+              'mysqli' => "${ext_tool_enable} -s ${sapi} mysqli",
+              'pdo_mysql' => "${ext_tool_enable} -s ${sapi} pdo_mysql",
+            }
+          }
+          default: {
+            $cmds = {
+              'mysql' => "${ext_tool_enable} -s ${sapi} mysql",
+              'mysqli' => "${ext_tool_enable} -s ${sapi} mysqli",
+              'pdo_mysql' => "${ext_tool_enable} -s ${sapi} pdo_mysql",
+            }
+          }
+        }
+      }
+      default: {
+        $cmds = {
+          $so_name => "${ext_tool_enable} -s ${sapi} ${so_name}",
+        }
+      }
+    }
 
     $_sapi = $sapi? {
       'ALL' => 'cli',
       default => $sapi,
     }
-    exec { $cmd:
-      onlyif  => "${ext_tool_query} -s ${_sapi} -m ${so_name} | /bin/grep 'No module matches ${so_name}'",
-      require => ::Php::Config[$title],
-    }
 
-    if $::php::fpm {
-      Package[$::php::fpm::package] ~> Exec[$cmd]
+    # run cmds. normally only one command is used for one extension, but debian split up the mysql extension, which now
+    # needs more commands to run.
+    $cmds.each |String $my_so_name, String $my_cmd| {
+      exec { $my_cmd:
+        onlyif  => "${ext_tool_query} -s ${_sapi} -m ${my_so_name} | /bin/grep 'No module matches ${my_so_name}'",
+        require => ::Php::Config[$title],
+      }
+
+      if $::php::fpm {
+        Package[$::php::fpm::package] ~> Exec[$my_cmd]
+      }
     }
   }
 }
