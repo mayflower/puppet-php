@@ -1,0 +1,85 @@
+---
+php::repo::debian::source: sury
+
+php::repo::debian::native::version_matrix:
+  7: '5.4'
+  8: '5.6'
+  9: '7.0'
+php::repo::debian::sury::version_matrix:
+  7: ['-1']
+  8: ['5.6', '7.0', '7.1', '7.2']
+  9: ['5.6', '7.0', '7.1', '7.2']
+php::repo::debian::dotdeb::version_matrix:
+  7: ['5.5', '5.6']
+  8: ['5.6', '7.0']
+  9: ['-1']
+
+php::repo::debian::custom::apt_list_name: 'php_custom'
+
+php::repo::debian::sury::apt_list_name: 'sury_php'
+php::repo::debian::sury::apt_source:
+  comment:      added by puppet/php
+  location:     'https://packages.sury.org/php'
+  release:      "%{::facts.os.distro.codename}"
+  repos:        main
+  key:
+    id:         DF3D585DB8F0EB658690A554AC0E47584A7A714D
+    source:     'https://packages.sury.org/php/apt.gpg'
+
+php::repo::debian::dotdeb::apt_list_name: 'dotdeb'
+php::repo::debian::dotdeb::apt_source:
+  comment:      added by puppet/php
+  location:     'https://packages.dotdeb.org'
+  release:      "%{::facts.os.distro.codename}"
+  repos:        all
+  key:
+    id:         6572BBEF1B5FF28B28B706837E3F070089DF5277
+    source:     'https://www.dotdeb.org/dotdeb.gpg'
+
+php::repo::debian::dotdeb::wheezy_zts: false
+php::repo::debian::dotdeb::wheezy_apt_source:
+  '5.6_zts':
+    comment:      added by puppet/php
+    location:     'https://packages.dotdeb.org'
+    release:      "wheezy-php56-zts"
+    repos:        all
+  '5.6':
+    comment:      added by puppet/php
+    location:     'https://packages.dotdeb.org'
+    release:      "wheezy-php56"
+    repos:        all
+    include:
+      src:        false
+  '5.5':
+    comment:      added by puppet/php
+    location:     'https://packages.dotdeb.org'
+    release:      "wheezy-php55"
+    repos:        all
+
+
+#    include:
+#      src:        false
+
+  # deb http://packages.dotdeb.org wheezy-php56 all
+  # deb http://packages.dotdeb.org wheezy-php56-zts all
+  # deb http://packages.dotdeb.org wheezy-php55 all
+
+
+
+# apt::source { 'debian_unstable':
+#   comment  => 'This is the iWeb Debian unstable mirror',
+#   location => 'http://debian.mirror.iweb.ca/debian/',
+#   release  => 'unstable',
+#   repos    => 'main contrib non-free',
+#   pin      => '-10',
+#   key      => {
+#     'id'     => 'A1BD8E9D78F7FE5C3E65D8AF8B48AD6246925553',
+#     'server' => 'subkeys.pgp.net',
+#   },
+#   include  => {
+#     'src' => true,
+#     'deb' => true,
+#   },
+# }
+
+
