@@ -8,17 +8,30 @@
 # [*settings*]
 #   Hash with nested hash of key => value to set in inifile
 #
+# [*service*]
+#   opt. name of Service resource that should be notified of configuration changes
+#
 class php::apache_config(
   Stdlib::Absolutepath $inifile = $php::params::apache_inifile,
-  Hash $settings                = {}
+  Hash $settings                = {},
+  Optional[String] $service     = undef,
 ) inherits php::params {
 
   assert_private()
 
   $real_settings = deep_merge($settings, hiera_hash('php::apache::settings', {}))
+  $apache_service = lookup('php::apache::service_name', String, 'first', $service)
 
-  php::config { 'apache':
-    file   => $inifile,
-    config => $real_settings,
+  if $apache_service and defined(Service[$apache_service]) {
+    php::config { 'apache':
+      file   => $inifile,
+      config => $real_settings,
+      notify => Service[$apache_service],
+    }
+  } else {
+    php::config { 'apache':
+      file   => $inifile,
+      config => $real_settings,
+    }
   }
 }

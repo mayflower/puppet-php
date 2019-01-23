@@ -63,6 +63,10 @@
 # [*apache_config*]
 #   Manage apache's mod_php configuration
 #
+# [*apache_service_name*]
+#   This can be set to the name of an apache Service resource, e.g. 'httpd'
+#   if module puppetlabs-apache is present
+#
 # [*proxy_type*]
 #    proxy server type (none|http|https|ftp)
 #
@@ -133,6 +137,7 @@ class php (
   String $pear_ensure                             = $php::params::pear_ensure,
   Boolean $phpunit                                = false,
   Boolean $apache_config                          = false,
+  Optional[String] $apache_service_name           = undef,
   $proxy_type                                     = undef,
   $proxy_server                                   = undef,
   Hash $extensions                                = {},
@@ -217,6 +222,7 @@ class php (
     Anchor['php::begin']
       -> class { 'php::apache_config':
         settings => $real_settings,
+        service  => $apache_service_name,
       }
     -> Anchor['php::end']
   }

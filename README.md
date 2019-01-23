@@ -11,7 +11,7 @@ voxpupuli/php is a Puppet module for managing PHP with a strong focus
 on php-fpm. The module aims to use sane defaults for the supported
 architectures. We strive to support all recent versions of Debian,
 Ubuntu, RedHat/CentOS, openSUSE/SLES and FreeBSD. Managing Apache
-with `mod_php` is not supported.
+with `mod_php` is not well supported.
 
 This originally was a fork of [jippi/puppet-php](https://github.com/jippi/puppet-php)
 (nodes-php on Puppet Forge) but has since been rewritten in large parts.
@@ -274,21 +274,38 @@ running Xenial (16.04), otherwise PHP 5.6 will be installed (for other versions)
 
 ### Apache support
 
-Apache with `mod_php` is not supported by this module. Please use
+Apache with `mod_php` is not well supported by this module. Please use
 [puppetlabs/apache](https://forge.puppetlabs.com/puppetlabs/apache) instead.
 
 We prefer using php-fpm. You can find an example Apache vhost in
 `manifests/apache_vhost.pp` that shows you how to use `mod_proxy_fcgi` to
 connect to php-fpm.
 
+If you wanna give it a try nevertheless there are two attributes to configure PHP.ini for `mod_php` and restart Apache httpd when settings change:
+
+```yaml
+---
+php::apache_config: true
+php::apache::service_name: 'httpd'
+# must match the name of the `Service` resource that defines the Apache httpd daemon
+```
+
+or
+
+```puppet
+class { '::php':
+  apache_config       => true,
+  apache_service_name => 'httpd',
+}
+```
 
 ### RedHat/CentOS SCL Users
 If you plan to use the SCL repositories with this module you must do the following adjustments:
 
 #### General config
-This ensures that the module will create configurations in the directory ``/etc/opt/rh/<php_version>/` (also in php.d/ 
+This ensures that the module will create configurations in the directory `/etc/opt/rh/<php_version>/` (also in php.d/
 for extensions). Anyway you have to manage the SCL repo's by your own.
- 
+
 ```puppet
 class { '::php::globals':
   php_version => 'rh-php71',
