@@ -265,12 +265,13 @@ describe 'php', type: :class do
 
         describe 'when called with global option for rhscl_mode' do
           describe 'when called with mode "remi"' do
-            scl_php_version = 'php56'
+            scl_php_version = '5.6'
+            scl_php_version_nodot = scl_php_version.delete('.')
             rhscl_mode = 'remi'
             let(:pre_condition) do
-              "class {'::php::globals':
-                        php_version => '#{scl_php_version}',
-                        rhscl_mode => '#{rhscl_mode}'
+              "class { 'php::globals':
+                php_version => '#{scl_php_version}',
+                rhscl_mode  => '#{rhscl_mode}',
               }"
             end
             let(:params) do
@@ -278,13 +279,13 @@ describe 'php', type: :class do
             end
 
             it { is_expected.to contain_class('php::global') }
-            it { is_expected.to contain_package("#{scl_php_version}-php-cli").with_ensure('present') }
-            it { is_expected.to contain_package("#{scl_php_version}-php-common").with_ensure('present') }
-            it { is_expected.to contain_php__config('global').with(file: "/etc/opt/#{rhscl_mode}/#{scl_php_version}/php.ini") }
+            it { is_expected.to contain_package("php#{scl_php_version_nodot}-php-cli").with_ensure('present') }
+            it { is_expected.to contain_package("php#{scl_php_version_nodot}-php-common").with_ensure('present') }
+            it { is_expected.to contain_php__config('global').with(file: "/etc/opt/#{rhscl_mode}/php#{scl_php_version_nodot}/php.ini") }
             it { is_expected.not_to contain_php__config('cli') }
 
             # see: https://github.com/voxpupuli/puppet-php/blob/master/lib/puppet/parser/functions/to_hash_settings.rb
-            it { is_expected.to contain_php__config__setting("/etc/opt/#{rhscl_mode}/#{scl_php_version}/php.ini: Date/date.timezone").with_value('Europe/Berlin') }
+            it { is_expected.to contain_php__config__setting("/etc/opt/#{rhscl_mode}/php#{scl_php_version_nodot}/php.ini: Date/date.timezone").with_value('Europe/Berlin') }
           end
 
           describe 'when called with mode "rhscl"' do

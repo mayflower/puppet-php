@@ -1,5 +1,8 @@
 # PHP globals class
 #
+# PHP support status can be found here:
+# https://secure.php.net/supported-versions.php
+#
 # === Parameters
 #
 # [*php_version*]
@@ -37,10 +40,13 @@ class php::globals (
       '16.04' => '7.0',
       default => '5.x',
     },
-    default => '5.x',
+    # This needs to be a valid version number due to remi repo on RHEL/CentOS
+    # Eventually these should all be valid version numbers by default
+    default => '5.6',
   }
 
-  $globals_php_version = pick($php_version, $default_php_version)
+  $globals_php_version       = pick($php_version, $default_php_version)
+  $globals_php_version_nodot = $globals_php_version.delete('.')
 
   case $facts['os']['family'] {
     'Debian': {
@@ -119,11 +125,13 @@ class php::globals (
     'RedHat': {
       case $rhscl_mode {
         'remi': {
-          $rhscl_root             = "/opt/remi/${php_version}/root"
-          $default_config_root    = "/etc/opt/remi/${php_version}"
-          $default_fpm_pid_file   = '/var/run/php-fpm/php-fpm.pid'
-          $package_prefix         = "${php_version}-php-"
-          $fpm_service_name       = "${php_version}-php-fpm"
+          # Using this installation method requires a sane version number
+          assert_type(Pattern[/^\d\.\d$/], $globals_php_version)
+          $rhscl_root           = "/opt/remi/php${globals_php_version_nodot}/root"
+          $default_config_root  = "/etc/opt/remi/php${globals_php_version_nodot}"
+          $default_fpm_pid_file = '/var/run/php-fpm/php-fpm.pid'
+          $package_prefix       = "php${globals_php_version_nodot}-php-"
+          $fpm_service_name     = "php${globals_php_version_nodot}-php-fpm"
         }
         'rhscl': {
           $rhscl_root             = "/opt/rh/${php_version}/root"

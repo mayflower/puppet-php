@@ -10,23 +10,24 @@ describe 'php::extension' do
       end
 
       describe 'with rhscl_mode "remi" enabled: install one extension' do
-        scl_php_version = 'php56'
+        scl_php_version = '5.6'
+        scl_php_version_nodot = scl_php_version.delete('.')
         rhscl_mode = 'remi'
-        configs_root = "/etc/opt/#{rhscl_mode}/#{scl_php_version}"
+        configs_root = "/etc/opt/#{rhscl_mode}/php#{scl_php_version_nodot}"
 
         let(:pre_condition) do
-          "class {'::php::globals':
-                    php_version => '#{scl_php_version}',
-                    rhscl_mode => '#{rhscl_mode}'
-          }->
-          class {'::php':
-                   ensure         => installed,
-                   manage_repos   => false,
-                   fpm            => false,
-                   dev            => true, # must be true since we are using the provider => pecl (option installs header files)
-                   composer       => false,
-                   pear           => true,
-                   phpunit        => false,
+          "class { 'php::globals':
+            php_version => '#{scl_php_version}',
+            rhscl_mode  => '#{rhscl_mode}',
+          }
+          -> class { 'php':
+            ensure       => installed,
+            manage_repos => false,
+            fpm          => false,
+            dev          => true, # must be true since we are using the provider => pecl (option installs header files)
+            composer     => false,
+            pear         => true,
+            phpunit      => false,
           }"
         end
 

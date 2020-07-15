@@ -2,15 +2,16 @@
 #
 # === Parameters
 #
-# [*yum_repo*]
-#   Class name of the repo under ::yum::repo
+# [*version*]
+#   Dotted PHP version. Default: $php::globals::globals_php_version
 #
 
 class php::repo::redhat (
-  $yum_repo = 'remi_php56',
+  Pattern[/^\d\.\d$/] $version = $php::globals::globals_php_version,
 ) {
 
-  $releasever = $facts['os']['name'] ? {
+  $version_nodot = $version.delete('.')
+  $releasever    = $facts['os']['name'] ? {
     /(?i:Amazon)/ => '6',
     default       => '$releasever',  # Yum var
   }
@@ -24,9 +25,9 @@ class php::repo::redhat (
     priority   => 1,
   }
 
-  yumrepo { 'remi-php56':
-    descr      => 'Remi\'s PHP 5.6 RPM repository for Enterprise Linux $releasever - $basearch',
-    mirrorlist => "https://rpms.remirepo.net/enterprise/${releasever}/php56/mirror",
+  yumrepo { "remi-php${version_nodot}":
+    descr      => "Remi's PHP ${version} RPM repository for Enterprise Linux \$releasever - \$basearch",
+    mirrorlist => "https://rpms.remirepo.net/enterprise/${releasever}/php${version_nodot}/mirror",
     enabled    => 1,
     gpgcheck   => 1,
     gpgkey     => 'https://rpms.remirepo.net/RPM-GPG-KEY-remi',

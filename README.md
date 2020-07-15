@@ -406,6 +406,33 @@ A list of commonly used modules:
     }
 ```
 
+### RedHat/CentOS using the remi repo
+
+On Red Hat-based systems you can also install PHP using the
+[remi repo](https://rpms.remirepo.net).
+
+Class example:
+
+```puppet
+class { 'php':
+  ...
+  manage_repos: true,
+}
+class { 'php::globals':
+  php_version => '7.3',
+  rhscl_mode  => 'remi',
+}
+```
+
+Hiera example:
+
+```yaml
+---
+php::manage_repos: true
+php::globals::php_version: '7.3'
+php::globals::rhscl_mode: 'remi'
+```
+
 ### Facts
 
 We deliver a `phpversion` fact with this module. This is explicitly **NOT** intended
