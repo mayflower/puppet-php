@@ -1,11 +1,12 @@
 require 'spec_helper_acceptance'
 
-describe 'php with default settings' do
-  context 'default parameters' do
-    it 'works with defaults' do
-      pp = 'include php'
-      # Run it twice and test for idempotency
+describe 'php class' do
+  context 'with default parameters' do
+    pp = 'include php'
+    it 'applies without error' do
       apply_manifest(pp, catch_failures: true)
+    end
+    it 'applies idempotently' do
       apply_manifest(pp, catch_changes: true)
     end
 
@@ -32,51 +33,56 @@ describe 'php with default settings' do
       it { is_expected.to be_enabled }
     end
   end
-  context 'default parameters with extensions' do
-    case default[:platform]
-    when %r{ubuntu-18.04}, %r{ubuntu-16.04}
-      it 'works with defaults' do
-        case default[:platform]
-        when %r{ubuntu-18.04}
-          simplexmlpackagename = 'php7.2-xml'
-        when %r{ubuntu-16.04}
-          simplexmlpackagename = 'php7.0-xml'
-        end
-        pp = <<-EOS
+  context 'with extensions' do
+    added_extensions = case default[:platform]
+                       when %r{ubuntu-18.04}
+                         <<-EOS
+                          'bz2'       => {},
+                          'curl'      => {},
+                          'intl'      => {},
+                          'json'      => {},
+                          'mbstring'  => {},
+                          'zip'       => {},
+                          'net-url'  => {
+                            package_prefix => 'php-',
+                            settings       => {
+                              extension => undef
+                            },
+                          },
+                          'simplexml'  => {
+                            package_name => 'php7.2-xml',
+                          },
+                         EOS
+                       when %r{ubuntu-16.04}
+                         <<-EOS
+                          'net-url'  => {
+                            package_prefix => 'php-',
+                            settings       => {
+                              extension => undef
+                            },
+                          },
+                          'simplexml'  => {
+                            package_name => 'php7.0-xml',
+                          },
+                         EOS
+                       else
+                         ''
+                       end
+
+    pp = <<-EOS
         class{'php':
           extensions => {
             'mysql'    => {},
             'gd'       => {},
-            'net-url'  => {
-              package_prefix => 'php-',
-              settings       => {
-                extension => undef
-              },
-            },
-            'simplexml'  => {
-              package_name => '#{simplexmlpackagename}',
-            }
+             #{added_extensions}
           }
         }
-        EOS
-        # Run it twice and test for idempotency
-        apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true)
-      end
-    else
-      it 'works with defaults' do
-        pp = <<-EOS
-        class{'php':
-          extensions => {
-            'mysql'    => {},
-            'gd'       => {}
-          }
-        }
-        EOS
-        # Run it twice and test for idempotency
-        apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true)
-      end
+    EOS
+    it 'applies without error' do
+      apply_manifest(pp, catch_failures: true)
+    end
+    it 'applies idempotently' do
+      apply_manifest(pp, catch_changes: true)
     end
 
     case default[:platform]
@@ -93,6 +99,7 @@ describe 'php with default settings' do
     when %r{debian-10}
       packagename = 'php7.3-fpm'
     end
+
     describe package(packagename) do
       it { is_expected.to be_installed }
     end
