@@ -86,14 +86,14 @@ define php::extension::install (
 
   unless $provider == 'none' {
     if ! defined(Package[$real_package]) {
-      package { $real_package:
+      ensure_packages([$real_package], {
         ensure          => $ensure,
         provider        => $provider,
         source          => $source,
         responsefile    => $responsefile,
         install_options => $install_options,
         require         => $package_require,
-      }
+      })
     }
   }
 }

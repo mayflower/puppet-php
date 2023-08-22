@@ -208,14 +208,10 @@ class php::packages (
       include ::apt
       Class[&#39;::apt::update&#39;] -&gt; Package[$real_names]
     }
-    package { $real_names:
-      ensure =&gt; $ensure,
-    }
-  } else {
-    package { $real_names:
-      ensure =&gt; $ensure,
-    }
   }
+  ensure_packages($real_names, {
+    ensure =&gt; $ensure,
+  })
 }</pre>
       </td>
     </tr>

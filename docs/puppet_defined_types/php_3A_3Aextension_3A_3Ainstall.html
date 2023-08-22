@@ -331,14 +331,14 @@ define php::extension::install (
   }
 
   unless $provider == &#39;none&#39; {
-    package { $real_package:
+    ensure_packages([$real_package], {
       ensure          =&gt; $ensure,
       provider        =&gt; $provider,
       source          =&gt; $source,
       responsefile    =&gt; $responsefile,
       install_options =&gt; $install_options,
       require         =&gt; $package_require,
-    }
+    })
   }
 }</pre>
       </td>

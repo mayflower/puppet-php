@@ -190,15 +190,15 @@ class php::dev(
       require =&gt; Class[&#39;::apt::update&#39;],
     })
 
-    package { $real_package:
+    ensure_packages([$real_package], {
       ensure  =&gt; $ensure,
       require =&gt; Class[&#39;::php::packages&#39;],
-    }
+    })
   } else {
-    package { $real_package:
+    ensure_packages([$real_package], {
       ensure  =&gt; $ensure,
       require =&gt; Class[&#39;::php::packages&#39;],
-    }
+    })
   }
 }</pre>
       </td>

@@ -90,9 +90,11 @@ class php::fpm (
     default   => $package,
   }
 
-  package { $real_package:
-    ensure  => $ensure,
-    require => Class['php::packages'],
+  if ($real_package != []){
+    ensure_packages([$real_package], {
+      ensure  => $ensure,
+      require => Class['php::packages'],
+    })
   }
 
   class { 'php::fpm::config':

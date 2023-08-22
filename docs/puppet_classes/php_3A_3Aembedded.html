@@ -219,10 +219,10 @@ class php::embedded(
     default   =&gt; $package,
   }
 
-  package { $real_package:
+  ensure_packages([$real_package],{
     ensure  =&gt; $ensure,
     require =&gt; Class[&#39;::php::packages&#39;],
-  }
+  })
   -&gt; ::php::config { &#39;embedded&#39;:
     file   =&gt; $inifile,
     config =&gt; $real_settings,

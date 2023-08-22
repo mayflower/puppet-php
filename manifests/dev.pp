@@ -35,8 +35,10 @@ class php::dev (
   if $facts['os']['name'] == 'Ubuntu' {
     ensure_packages(["${php::package_prefix}xml"], { ensure  => present, require => $require, })
   }
-  package { $real_package:
-    ensure  => $ensure,
-    require => Class['php::packages'],
+  if ($real_package != []) {
+    ensure_packages([$real_package], {
+      ensure  => $ensure,
+      require => Class['php::packages'],
+    })
   }
 }

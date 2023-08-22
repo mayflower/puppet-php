@@ -26,12 +26,8 @@ class php::packages (
       include apt
       Class['apt::update'] -> Package[$real_names]
     }
-    package { $real_names:
-      ensure => $ensure,
-    }
-  } else {
-    package { $real_names:
-      ensure => $ensure,
-    }
   }
+  ensure_packages($real_names, {
+    ensure => $ensure,
+  })
 }

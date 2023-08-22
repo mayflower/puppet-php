@@ -36,10 +36,10 @@ class php::embedded (
     default   => $package,
   }
 
-  package { $real_package:
+  ensure_package([$real_package], {
     ensure  => $ensure,
     require => Class['php::packages'],
-  }
+  })
   -> php::config { 'embedded':
     file   => $inifile,
     config => $real_settings,

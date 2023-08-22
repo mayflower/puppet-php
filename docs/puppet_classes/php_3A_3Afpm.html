@@ -427,10 +427,10 @@ class php::fpm (
     default   =&gt; $package,
   }
 
-  package { $real_package:
+  ensure_packages([$real_package],{
     ensure  =&gt; $ensure,
     require =&gt; Class[&#39;::php::packages&#39;],
-  }
+  })
 
   class { &#39;::php::fpm::config&#39;:
     user      =&gt; $user,

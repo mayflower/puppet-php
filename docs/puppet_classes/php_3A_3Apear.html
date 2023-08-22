@@ -232,15 +232,15 @@ class php::pear (
       require =&gt; Class[&#39;::apt::update&#39;],
     })
 
-    package { $package_name:
+    ensure_packages([$package_name], {
       ensure  =&gt; $ensure,
       require =&gt; [Class[&#39;::apt::update&#39;],Class[&#39;::php::cli&#39;],Package[&quot;${php::package_prefix}xml&quot;]],
     }
   } else {
-    package { $package_name:
+    ensure_packages([$package_name], {
       ensure  =&gt; $ensure,
       require =&gt; Class[&#39;::php::cli&#39;],
-    }
+    })
   }
 }</pre>
       </td>

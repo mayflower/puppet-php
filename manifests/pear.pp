@@ -49,14 +49,12 @@ class php::pear (
   if $facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['full'], '18.04') >= 0 {
     ensure_packages(["${php::package_prefix}xml"], { ensure  => present, require => $require, })
 
-    package { $package_name:
-      ensure  => $ensure,
-      require => [$require,Class['php::cli'],Package["${php::package_prefix}xml"]],
-    }
+    $all_requirements = [$require,Class['php::cli'],Package["${php::package_prefix}xml"]]
   } else {
-    package { $package_name:
-      ensure  => $ensure,
-      require => Class['php::cli'],
-    }
+    $all_requirements = Class['php::cli']
   }
+  ensure_packages( [$package_name],{
+    ensure  => $ensure,
+    require => $all_requirements,
+  })
 }
