@@ -13,6 +13,7 @@ class php::repo::redhat (
     /(?i:Amazon)/ => '6',
     default       => '$releasever',  # Yum var
   }
+  $version = $yum_repo.match('.\d$')[0]
 
   yumrepo { 'remi':
     descr      => 'Remi\'s RPM repository for Enterprise Linux $releasever - $basearch',
@@ -23,9 +24,9 @@ class php::repo::redhat (
     priority   => 1,
   }
 
-  yumrepo { 'remi-php56':
-    descr      => 'Remi\'s PHP 5.6 RPM repository for Enterprise Linux $releasever - $basearch',
-    mirrorlist => "https://rpms.remirepo.net/enterprise/${releasever}/php56/mirror",
+  yumrepo { "remi-php${version}":
+    descr      => "Remi's PHP ${version} RPM repository for Enterprise Linux \$releasever - \$basearch",
+    mirrorlist => "https://rpms.remirepo.net/enterprise/${releasever}/php${version}/mirror",
     enabled    => 1,
     gpgcheck   => 1,
     gpgkey     => 'https://rpms.remirepo.net/RPM-GPG-KEY-remi2023',
