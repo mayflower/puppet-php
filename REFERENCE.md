@@ -1128,6 +1128,9 @@ Configure php-fpm service
 [*error_log*]
   Path to error log file. If it's set to "syslog", log is
   sent to syslogd instead of being written in a local file.
+  The base directory will be managed if it is a directory
+  dedicated to PHP (i.e. has "php" in its name and is not
+  a shared location like /var/log)
 
 [*log_level*]
   The php-fpm log level
@@ -1169,7 +1172,9 @@ Configure php-fpm service
   UNIX group of the root user
 
 [*pid_file*]
-  Path to fpm pid file
+  Path to fpm pid file. The base directory will be managed if it is
+  a directory dedicated to PHP (i.e. has "php" in its name and is not
+  a shared location like /var/run)
 
 [*manage_run_dir*]
   Manage the run directory

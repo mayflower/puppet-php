@@ -27,6 +27,9 @@
 # [*error_log*]
 #   Path to error log file. If it's set to "syslog", log is
 #   sent to syslogd instead of being written in a local file.
+#   The base directory will be managed if it is a directory
+#   dedicated to PHP (i.e. has "php" in its name and is not
+#   a shared location like /var/log)
 #
 # [*log_level*]
 #   The php-fpm log level
@@ -68,7 +71,9 @@
 #   UNIX group of the root user
 #
 # [*pid_file*]
-#   Path to fpm pid file
+#   Path to fpm pid file. The base directory will be managed if it is
+#   a directory dedicated to PHP (i.e. has "php" in its name and is not
+#   a shared location like /var/run)
 #
 # [*manage_run_dir*]
 #   Manage the run directory
@@ -100,6 +105,9 @@ class php::fpm::config (
 ) inherits php::params {
   assert_private()
 
+  $pid_dir = dirname($pid_file)
+  $log_dir = dirname($error_log)
+
   file { $config_file:
     ensure  => file,
     content => template('php/fpm/php-fpm.conf.erb'),
@@ -108,8 +116,8 @@ class php::fpm::config (
     mode    => '0644',
   }
 
-  if $manage_run_dir {
-    file { '/var/run/php-fpm':
+  if $manage_run_dir and 'php' in $pid_dir {
+    file { $pid_dir:
       ensure => directory,
       owner  => 'root',
       group  => $root_group,
@@ -117,14 +125,14 @@ class php::fpm::config (
     }
   }
 
-  ensure_resource('file', '/var/log/php-fpm/',
-    {
+  if $error_log != 'syslog' and 'php' in $log_dir {
+    file { $log_dir:
       ensure => directory,
       owner  => 'root',
       group  => $root_group,
       mode   => $log_dir_mode,
     }
-  )
+  }
 
   file { $pool_base_dir:
     ensure => directory,

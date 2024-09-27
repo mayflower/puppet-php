@@ -44,6 +44,70 @@ describe 'php::fpm::config' do
           )
         end
       end
+
+      describe 'manages a log directory' do
+        context 'with dedicated path' do
+          let(:params) do
+            {
+              error_log: '/var/log/php/fpm.log',
+            }
+          end
+
+          it do
+            is_expected.to contain_file('/var/log/php')
+          end
+        end
+
+        context 'without dedicated path' do
+          let(:params) do
+            {
+              error_log: '/var/log/php-fpm.log',
+            }
+          end
+
+          it do
+            is_expected.not_to contain_file('/var/log')
+          end
+        end
+
+        context 'without syslog logging' do
+          let(:params) do
+            {
+              error_log: 'syslog',
+            }
+          end
+
+          it do
+            is_expected.not_to contain_file('syslog')
+          end
+        end
+      end
+
+      describe 'manages a runtime directory' do
+        context 'with dedicated path' do
+          let(:params) do
+            {
+              pid_file: '/var/run/php/fpm.pid',
+            }
+          end
+
+          it do
+            is_expected.to contain_file('/var/run/php')
+          end
+        end
+
+        context 'without dedicated path' do
+          let(:params) do
+            {
+              pid_file: '/var/run/fpm.pid',
+            }
+          end
+
+          it do
+            is_expected.not_to contain_file('/var/run')
+          end
+        end
+      end
     end
   end
 end
