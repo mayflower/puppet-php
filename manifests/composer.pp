@@ -2,8 +2,8 @@
 #
 # === Parameters
 #
-# [*source*]
-#   Holds URL to the Composer source file
+# [*channel_sources*]
+#   Define channel URLs to the Composer source file
 #
 # [*path*]
 #   Holds path to the Composer executable
@@ -27,7 +27,7 @@
 #   UNIX group of the root user
 #
 class php::composer (
-  String $source                       = $php::params::composer_source,
+  Hash $channel_sources                = {},
   Stdlib::Absolutepath $path           = $php::params::composer_path,
   Optional[String[1]] $proxy_type      = undef,
   Optional[String[1]] $proxy_server    = undef,
@@ -40,7 +40,7 @@ class php::composer (
 
   archive { 'download composer':
     path         => $path,
-    source       => $source,
+    source       => $channel_sources.dig($channel),
     proxy_type   => $proxy_type,
     proxy_server => $proxy_server,
   }
@@ -53,7 +53,6 @@ class php::composer (
   if $auto_update {
     class { 'php::composer::auto_update':
       max_age      => $max_age,
-      source       => $source,
       path         => $path,
       channel      => $channel,
       proxy_type   => $proxy_type,

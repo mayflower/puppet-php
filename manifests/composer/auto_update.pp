@@ -5,9 +5,6 @@
 # [*max_age*]
 #   Defines number of days after which Composer should be updated
 #
-# [*source*]
-#   Holds URL to the Composer source file
-#
 # [*path*]
 #   Holds path to the Composer executable
 #
@@ -30,7 +27,6 @@
 #
 class php::composer::auto_update (
   Integer[1] $max_age,
-  String[1] $source,
   Stdlib::Absolutepath $path,
   Php::ComposerChannel  $channel = 'stable',
   Optional[String[1]] $proxy_type   = undef,

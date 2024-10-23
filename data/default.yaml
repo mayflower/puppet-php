@@ -1,6 +1,10 @@
 ---
-
 lookup_options:
   php::fpm::pools:
     merge: first
-
+php::composer::channel_sources:
+  stable: 'https://getcomposer.org/download/latest-stable/composer.phar'
+  preview: 'https://getcomposer.org/download/latest-preview/composer.phar'
+  snapshot: 'https://getcomposer.org/composer.phar'
+  1: 'https://getcomposer.org/download/latest-1.x/composer.phar'
+  2: 'https://getcomposer.org/download/latest-2.x/composer.phar'
