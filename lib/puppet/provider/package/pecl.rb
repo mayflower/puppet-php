@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'puppet/provider/package'
+require_relative './pear'
 
 Puppet::Type.type(:package).provide :pecl, parent: :pear do
   desc 'Package management via `pecl`.'
