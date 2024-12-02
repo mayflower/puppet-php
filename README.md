@@ -254,8 +254,19 @@ lookup_options:
 
 ### Ubuntu systems and Ondřej's PPA
 
+To use a different PHP version than the Ubuntu one, you can install Ondřej's PPA and set the version explicitly:
+
+```
+  class{ 'php::repo::ubuntu': }->
+  class { '::php::globals':
+    php_version => '7.4',
+  }
+```
+
+#### Older versions of Ondřej's PPAs are deprecated
+
 The older Ubuntu PPAs run by Ondřej have been deprecated (ondrej/php5, ondrej/php5.6)
-in favor of a new PPA: ondrej/php which contains all 3 versions of PHP: 5.5, 5.6, and 7.0
+in favor of a new PPA: ondrej/php which contains many versions of PHP depending on the release.
 Here's an example in hiera of getting PHP 5.6 installed with php-fpm, pear/pecl, and composer:
 
 ```puppet
@@ -267,8 +278,7 @@ php::pear: true
 php::phpunit: false
 ```
 
-If you do not specify a php version, in Ubuntu the default will be 7.0 if you are
-running Xenial (16.04), otherwise PHP 5.6 will be installed (for other versions)
+If you do not specify a php version, in Ubuntu the default will depend on the release you are using.
 
 ### Apache support
 
