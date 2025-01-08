@@ -25,6 +25,9 @@ describe 'php::fpm', type: :class do
           when '22.04'
             it { is_expected.to contain_package('php8.1-fpm').with_ensure('present') }
             it { is_expected.to contain_service('php8.1-fpm').with_ensure('running') }
+          when '24.04'
+            it { is_expected.to contain_package('php8.3-fpm').with_ensure('present') }
+            it { is_expected.to contain_service('php8.3-fpm').with_ensure('running') }
           when '20.04', '11'
             it { is_expected.to contain_package('php7.4-fpm').with_ensure('present') }
             it { is_expected.to contain_service('php7.4-fpm').with_ensure('running') }

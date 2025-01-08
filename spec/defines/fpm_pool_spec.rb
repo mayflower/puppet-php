@@ -33,6 +33,8 @@ describe 'php::fpm::pool' do
           let(:params) { {} }
 
           case facts[:os]['release']['major']
+          when '24.04'
+            it { is_expected.to contain_file('/etc/php/8.3/fpm/pool.d/unique-name.conf') }
           when '22.04'
             it { is_expected.to contain_file('/etc/php/8.1/fpm/pool.d/unique-name.conf') }
           when '20.04'

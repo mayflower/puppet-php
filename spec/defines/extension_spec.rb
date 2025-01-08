@@ -25,6 +25,8 @@ describe 'php::extension' do
                     end
                   when 'Ubuntu'
                     case facts[:os]['release']['major']
+                    when '24.04'
+                      '/etc/php/8.3/mods-available'
                     when '22.04'
                       '/etc/php/8.1/mods-available'
                     when '20.04'

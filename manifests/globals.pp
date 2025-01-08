@@ -42,6 +42,7 @@ class php::globals (
         '18.04' => '7.2',
         '20.04' => '7.4',
         '22.04' => '8.1',
+        '24.04' => '8.3',
         default => fail("Unsupported Ubuntu release: ${fact('os.release.major')}"),
       },
       default  => '5.x',
