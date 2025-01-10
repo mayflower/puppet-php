@@ -10,6 +10,26 @@ describe 'php::fpm::pool' do
       end
       let(:pre_condition) { 'include php' }
 
+      context 'with environment based config' do
+        let(:title) { 'env-config' }
+        let(:params) do
+          {
+            pm_max_children: '${PM_MAX_CHILDREN}',
+            pm_start_servers: '${PM_START_SERVERS}',
+            pm_min_spare_servers: '${PM_MIN_SPARE_SERVERS}',
+            pm_max_spare_servers: '${PM_MAX_SPARE_SERVERS}',
+            pm_max_requests: '${PM_MAX_REQUESTS}',
+            pm_process_idle_timeout: '${PM_PROCESS_IDLE_TIMEOUT}',
+            request_terminate_timeout: '${REQUEST_TERMINATE_TIMEOUT}',
+            request_slowlog_timeout: '${REQUEST_SLOWLOG_TIMEOUT}',
+          }
+        end
+
+        it {
+          is_expected.to compile
+        }
+      end
+
       case facts[:os]['name']
       when 'Debian'
         context 'plain config' do
